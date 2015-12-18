@@ -9,15 +9,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
-import modelo.modelo;
-import vista.vista;
+import modelo.Model;
+import vista.Interf;
 
-public class controlador implements ActionListener, MouseListener{
+public class Controla implements ActionListener, MouseListener{
     
-    vista vista;
-    modelo modelo = new modelo();
+    Interf vista;
+    Model modelo = new Model();
     
-    public controlador(vista v){
+    public Controla(Interf v){
         vista = v;
     }
 
