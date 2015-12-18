@@ -11,9 +11,9 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class Model{
+public class Modelo{
     
-    public Model(){
+    public Modelo(){
     
     }
     

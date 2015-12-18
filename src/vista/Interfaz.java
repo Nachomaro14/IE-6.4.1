@@ -1,8 +1,8 @@
 package vista;
 
-public class Interf extends javax.swing.JFrame {
+public class Interfaz extends javax.swing.JFrame {
 
-    public Interf() {
+    public Interfaz() {
         initComponents();
     }
 
@@ -704,7 +704,7 @@ public class Interf extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Interf v = new Interf();
+                Interfaz v = new Interfaz();
                 v.setVisible(true);
             }
         });
