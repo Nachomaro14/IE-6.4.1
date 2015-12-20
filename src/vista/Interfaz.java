@@ -556,7 +556,7 @@ public class Interfaz extends javax.swing.JFrame {
     public javax.swing.JTable tablaPrestamos;
     public javax.swing.JTable tablaSocios;
     public javax.swing.JLabel telefonoS;
-    private javax.swing.JLabel telefonoSeg;
+    public javax.swing.JLabel telefonoSeg;
     public javax.swing.JLabel tituloS;
     public javax.swing.JLabel tituloSeg;
     public javax.swing.JTextField txtAnoEdicionLibro;

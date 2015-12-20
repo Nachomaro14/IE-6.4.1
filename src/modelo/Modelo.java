@@ -169,7 +169,7 @@ public class Modelo{
         return false;
     }
     
-    public boolean modificarLibro(String tituloS, String titulo, int ejemplares, String editorial, int paginas, int anyo){
+    public boolean modificarLibro(String tituloS, String titulo, long ejemplares, String editorial, int paginas, int anyo){
         try {
             ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
             Query query = bd.query();
@@ -223,7 +223,7 @@ public class Modelo{
         return false;
     }
     
-    public boolean modificarSocio(long telefonoS, String nombre, String apellidos, int edad, String direccion, int telefono){
+    public boolean modificarSocio(long telefonoS, String nombre, String apellidos, int edad, String direccion, long telefono){
         try {
             ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
             Query query = bd.query();

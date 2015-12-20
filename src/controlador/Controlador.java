@@ -2,8 +2,11 @@ package controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -26,25 +29,16 @@ public class Controlador implements ActionListener, MouseListener{
         btnModificarLibro,
         btnEliminarLibro,
         btnLimpiarLibro,
-        iTLibros,
         
         btnInsertarSocio,
         btnModificarSocio,
         btnEliminarSocio,
         btnLimpiarSocio,
-        iTSocios,
         
         btnInsertarPrestamo,
         btnModificarPrestamo,
         btnEliminarPrestamo,
         btnLimpiarPrestamo,
-        iTPrestamos,
-        
-        btnConsultarNombre,
-        btnConsultarApellido,
-        btnConsultarTitulo,
-        btnLibrosFuera,
-        btnClientesMorosos
     }
     
     public void iniciar(){
@@ -102,7 +96,20 @@ public class Controlador implements ActionListener, MouseListener{
         this.vista.tablaPrestamos.getTableHeader().setReorderingAllowed(false);
         this.vista.tablaPrestamos.getTableHeader().setResizingAllowed(false);
         
-        DefaultTableModel modeloTablaDefault = new DefaultTableModel();
+        this.vista.comboLibros.setModel(new DefaultComboBoxModel(modelo.titulosLibros()));
+        this.vista.comboSocios.setModel(new DefaultComboBoxModel(modelo.titulosLibros()));
+        long t = Long.parseLong(vista.comboSocios.getSelectedItem().toString());
+        String n = modelo.nombreSocio(t);
+        this.vista.txtNombreSocioPrestamo.setText(n);
+        
+        this.vista.comboSocios.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                long t = Long.parseLong(vista.comboSocios.getSelectedItem().toString());
+                String n = modelo.nombreSocio(t);
+                vista.txtNombreSocioPrestamo.setText(n);
+            }
+        });
     }
     
     public void actionPerformed(ActionEvent e) {
@@ -110,7 +117,7 @@ public class Controlador implements ActionListener, MouseListener{
             case btnInsertarLibro:
                 if(vista.txtTituloLibro.getText().equals("") || vista.txtEjemplaresLibro.getText().equals("") || vista.txtEditorialLibro.getText().equals("")
                         || vista.txtPaginasLibro.getText().equals("") || vista.txtAnoEdicionLibro.getText().equals("")){
-                    JOptionPane.showMessageDialog(null, "Rellene todos los campos");
+                    JOptionPane.showMessageDialog(null, "Rellene todos los campos.");
                 }else{
                     String titulo = vista.txtTituloLibro.getText();
                     long ejemplares = Long.parseLong(vista.txtEjemplaresLibro.getText());
@@ -119,25 +126,64 @@ public class Controlador implements ActionListener, MouseListener{
                     int anyo = Integer.parseInt(vista.txtAnoEdicionLibro.getText());
                     
                     modelo.insertarLibro(titulo, ejemplares, editorial, paginas, anyo);
-                    this.vista.tablaLibros.setModel(modelo.getTablaLibros());
                     
                     vista.txtTituloLibro.setText("");
                     vista.txtEjemplaresLibro.setText("");
                     vista.txtEditorialLibro.setText("");
                     vista.txtPaginasLibro.setText("");
                     vista.txtAnoEdicionLibro.setText("");
+                    
+                    actualizarInfo();
                 }
                 break;
             case btnModificarLibro:
-                
+                if(vista.tituloS.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Seleccione un libro primero.");
+                }else{
+                    if(vista.txtTituloLibro.equals("") || vista.txtEjemplaresLibro.equals("") || vista.txtEditorialLibro.equals("") || vista.txtPaginasLibro.equals("")
+                            || vista.txtAnoEdicionLibro.equals("")){
+                        JOptionPane.showMessageDialog(null, "Rellene todos los campos.");
+                    }else{
+                        String tituloS = vista.tituloS.getText();
+                        String titulo = vista.txtTituloLibro.getText();
+                        long ejemplares = Long.parseLong(vista.txtEjemplaresLibro.getText());
+                        String editorial = vista.txtEditorialLibro.getText();
+                        int paginas = Integer.parseInt(vista.txtPaginasLibro.getText());
+                        int anyo = Integer.parseInt(vista.txtAnoEdicionLibro.getText());
+                        
+                        modelo.modificarLibro(tituloS, titulo, ejemplares, editorial, paginas, anyo);
+                        
+                        vista.txtTituloLibro.setText("");
+                        vista.txtEjemplaresLibro.setText("");
+                        vista.txtEditorialLibro.setText("");
+                        vista.txtPaginasLibro.setText("");
+                        vista.txtAnoEdicionLibro.setText("");
+                        
+                        actualizarInfo();
+                    }
+                }
                 break;
             case btnEliminarLibro:
-                
+                if(vista.tituloS.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Seleccione un libro primero.");
+                }else{
+                    String tituloS = vista.tituloS.getText();
+                    
+                    modelo.eliminarLibro(tituloS);
+                    
+                    vista.txtTituloLibro.setText("");
+                    vista.txtEjemplaresLibro.setText("");
+                    vista.txtEditorialLibro.setText("");
+                    vista.txtPaginasLibro.setText("");
+                    vista.txtAnoEdicionLibro.setText("");
+                    
+                    actualizarInfo();
+                }
                 break;
             case btnInsertarSocio:
                 if(vista.txtNombreSocio.getText().equals("") || vista.txtApellidosSocio.getText().equals("") || vista.txtEdadSocio.getText().equals("")
                         || vista.txtDireccionSocio.getText().equals("") || vista.txtTelefonoSocio.getText().equals("")){
-                    JOptionPane.showMessageDialog(null, "Rellene todos los campos");
+                    JOptionPane.showMessageDialog(null, "Rellene todos los campos.");
                 }else{
                     String nombre = vista.txtNombreSocio.getText();
                     String apellidos = vista.txtApellidosSocio.getText();
@@ -146,31 +192,114 @@ public class Controlador implements ActionListener, MouseListener{
                     int telefono = Integer.parseInt(vista.txtTelefonoSocio.getText());
                     
                     modelo.insertarSocio(nombre, apellidos, edad, direccion, telefono);
-                    this.vista.tablaSocios.setModel(modelo.getTablaSocios());
                     
                     vista.txtNombreSocio.setText("");
                     vista.txtApellidosSocio.setText("");
                     vista.txtEdadSocio.setText("");
                     vista.txtDireccionSocio.setText("");
                     vista.txtTelefonoSocio.setText("");
+                    
+                    actualizarInfo();
                 }
                 break;
             case btnModificarSocio:
-                
+                if(vista.telefonoSeg.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Seleccione un socio primero.");
+                }else{
+                    if(vista.txtNombreSocio.getText().equals("") || vista.txtApellidosSocio.getText().equals("") || vista.txtEdadSocio.getText().equals("")
+                            || vista.txtDireccionSocio.getText().equals("") || vista.txtTelefonoSocio.getText().equals("")){
+                        JOptionPane.showMessageDialog(null, "Rellene todos los campos.");
+                    }else{
+                        long telefonoS = Long.parseLong(vista.telefonoSeg.getText());
+                        String nombre = vista.txtNombreSocio.getText();
+                        String apellidos = vista.txtApellidosSocio.getText();
+                        int edad = Integer.parseInt(vista.txtEdadSocio.getText());
+                        String direccion = vista.txtDireccionSocio.getText();
+                        long telefono = Long.parseLong(vista.txtTelefonoSocio.getText());
+                        
+                        modelo.modificarSocio(telefonoS, nombre, apellidos, edad, direccion, telefono);
+                        
+                        vista.txtNombreSocio.setText("");
+                        vista.txtApellidosSocio.setText("");
+                        vista.txtEdadSocio.setText("");
+                        vista.txtDireccionSocio.setText("");
+                        vista.txtTelefonoSocio.setText("");
+                        
+                        actualizarInfo();
+                    }
+                }
                 break;
             case btnEliminarSocio:
-                
+                if(vista.telefonoSeg.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Seleccione un socio primero.");
+                }else{
+                    long telefonoS = Long.parseLong(vista.telefonoSeg.getText());
+                    
+                    modelo.eliminarSocio(telefonoS);
+                    
+                    vista.txtNombreSocio.setText("");
+                    vista.txtApellidosSocio.setText("");
+                    vista.txtEdadSocio.setText("");
+                    vista.txtDireccionSocio.setText("");
+                    vista.txtTelefonoSocio.setText("");
+                    
+                    actualizarInfo();
+                }
                 break;
             case btnInsertarPrestamo:
-                
+                if(vista.comboLibros.getSelectedItem().toString().equals("") || vista.comboSocios.getSelectedItem().toString().equals("")){
+                    JOptionPane.showMessageDialog(null, "Cree un libro y socio antes que un préstamo.");
+                }else{
+                    String titulo = vista.comboLibros.getSelectedItem().toString();
+                    long telefono = Long.parseLong(vista.comboSocios.getSelectedItem().toString());
+                    
+                    modelo.insertarPrestamo(titulo, telefono);
+                    
+                    vista.comboLibros.setSelectedIndex(0);
+                    vista.comboSocios.setSelectedIndex(0);
+                    
+                    actualizarInfo();
+                }
                 break;
             case btnModificarPrestamo:
+                if(vista.comboLibros.getSelectedItem().toString().equals("") || vista.comboSocios.getSelectedItem().toString().equals("")){
+                    JOptionPane.showMessageDialog(null, "Cree un libro y socio antes que un préstamo.");
+                }else{
+                    if(vista.tituloS.getText().equals("") || vista.telefonoS.getText().equals("")){
+                        JOptionPane.showMessageDialog(null, "Seleccione un préstamo primero.");
+                    }else{
+                        String tituloS = vista.tituloS.getText();
+                        long telefonoS = Long.parseLong(vista.telefonoS.getText());
+                        String titulo = vista.comboLibros.getSelectedItem().toString();
+                        long telefono = Long.parseLong(vista.comboSocios.getSelectedItem().toString());
+                        
+                        modelo.modificarPrestamo(tituloS, telefonoS, titulo, telefono);
+                        
+                        vista.comboLibros.setSelectedIndex(0);
+                        vista.comboSocios.setSelectedIndex(0);
+                    
+                        actualizarInfo();
+                    }
+                }
                 
                 break;
             case btnEliminarPrestamo:
-                
+                if(vista.tituloS.getText().equals("") || vista.telefonoS.getText().equals("")){
+                        JOptionPane.showMessageDialog(null, "Seleccione un préstamo primero.");
+                }else{
+                    String tituloS = vista.tituloS.getText();
+                    long telefonoS = Long.parseLong(vista.telefonoS.getText());
+                    
+                    modelo.eliminarPrestamo(tituloS, telefonoS);
+                    
+                    vista.comboLibros.setSelectedIndex(0);
+                    vista.comboSocios.setSelectedIndex(0);
+                    
+                    actualizarInfo();
+                }
                 break;
             case btnLimpiarLibro:
+                vista.tituloSeg.setText("");
                 vista.txtTituloLibro.setText("");
                 vista.txtEjemplaresLibro.setText("");
                 vista.txtEditorialLibro.setText("");
@@ -178,6 +307,7 @@ public class Controlador implements ActionListener, MouseListener{
                 vista.txtAnoEdicionLibro.setText("");
                 break;
             case btnLimpiarSocio:
+                vista.telefonoSeg.setText("");
                 vista.txtNombreSocio.setText("");
                 vista.txtApellidosSocio.setText("");
                 vista.txtEdadSocio.setText("");
@@ -185,25 +315,10 @@ public class Controlador implements ActionListener, MouseListener{
                 vista.txtTelefonoSocio.setText("");
                 break;
             case btnLimpiarPrestamo:
-                
-                break;
-            case btnConsultarNombre:
-                
-                break;
-            case btnConsultarApellido:
-                
-                break;
-            case btnConsultarTitulo:
-                
-                break;
-            case iTLibros:
-                
-                break;
-            case iTSocios:
-                
-                break;
-            case iTPrestamos:
-                
+                vista.telefonoS.setText("");
+                vista.tituloS.setText("");
+                vista.comboLibros.setSelectedIndex(0);
+                vista.comboSocios.setSelectedIndex(0);
                 break;
         }
     }
@@ -238,5 +353,7 @@ public class Controlador implements ActionListener, MouseListener{
         vista.tablaLibros.setModel(modelo.getTablaLibros());
         vista.tablaSocios.setModel(modelo.getTablaSocios());
         vista.tablaPrestamos.setModel(modelo.getTablaPrestamos());
+        vista.comboLibros.setModel(new DefaultComboBoxModel(modelo.titulosLibros()));
+        vista.comboSocios.setModel(new DefaultComboBoxModel(modelo.titulosLibros()));
     }
 }
