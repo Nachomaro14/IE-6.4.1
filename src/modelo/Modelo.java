@@ -356,4 +356,92 @@ public class Modelo{
         }
         return false;
     }
+    
+    public String[] titulosLibros(){
+        int num = 0;
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            ObjectSet result = query.execute();
+            while(result.hasNext()){
+                num = result.size();
+            }
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al obtener número de títulos\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        String[] titulos = new String[num];
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            ObjectSet result = query.execute();
+            int i = 0;
+            while(result.hasNext()){
+                Libro l = (Libro) result.next();
+                titulos[i] = l.getTitulo();
+                i++;
+            }
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al obtener títulos\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        return titulos;
+    }
+    
+    public long[] telefonosSocios(){
+        int num = 0;
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            ObjectSet result = query.execute();
+            while(result.hasNext()){
+                num = result.size();
+            }
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al obtener número de teléfonos\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        long[] telefonos = new long[num];
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            ObjectSet result = query.execute();
+            int i = 0;
+            while(result.hasNext()){
+                Socio s = (Socio) result.next();
+                telefonos[i] = s.getTelefono();
+                i++;
+            }
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al obtener teléfonos\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        return telefonos;
+    }
+    
+    public String nombreSocio(long telefono){
+        String nombre = "";
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefono);
+            ObjectSet result = query.execute();
+            Socio s = (Socio) result.next();
+            nombre = s.getNombre() + " " + s.getApellidos();
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al obtener nombre\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        return nombre;
+    }
 }

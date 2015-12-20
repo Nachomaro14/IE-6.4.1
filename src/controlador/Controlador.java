@@ -233,4 +233,10 @@ public class Controlador implements ActionListener, MouseListener{
 
     public void mouseExited(MouseEvent e) {
     }
+    
+    public void actualizarInfo(){
+        vista.tablaLibros.setModel(modelo.getTablaLibros());
+        vista.tablaSocios.setModel(modelo.getTablaSocios());
+        vista.tablaPrestamos.setModel(modelo.getTablaPrestamos());
+    }
 }
