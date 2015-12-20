@@ -1,17 +1,21 @@
 package modelo;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import clases.*;
+import com.db4o.Db4oEmbedded;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Query;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class Modelo{
+    
+    ObjectContainer bd;
     
     public Modelo(){
     
@@ -27,36 +31,42 @@ public class Modelo{
     public DefaultTableModel getTablaLibros(){
         DefaultTableModel tablemodel = new ModeloTablaNoEditable();
         int registros = 0;
-        String[] columNames = {"Código","Título","Ejemplares","Editorial", "Páginas", "Año de Edicion"};
-      
+        String[] columNames = {"Título","Ejemplares","Editorial", "Páginas", "Año de Edicion"};
+        
         try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Libros");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][6];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Libros");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("Titulo");
-                data[i][2] = res.getString("Ejemplares");
-                data[i][3] = res.getString("Editorial");
-                data[i][4] = res.getString("Paginas");
-                data[i][5] = res.getString("AnyoEdicion");
-            i++;
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            ObjectSet result = query.execute();
+            while(result.hasNext()){
+                registros = result.size();
             }
-            res.close();
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        Object[][] data = new String[registros][5];
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            ObjectSet result = query.execute();
+            int i = 0;
+            while(result.hasNext()){
+                Libro l = (Libro) result.next();
+                data[i][0] = l.getTitulo();
+                data[i][1] = l.getEjemplares();
+                data[i][2] = l.getEditorial();
+                data[i][3] = l.getPaginas();
+                data[i][4] = l.getAnyo();
+                i++;
+            }
+            bd.close();
             tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
+            e.printStackTrace();
         }
         return tablemodel;
     }
@@ -64,36 +74,42 @@ public class Modelo{
     public DefaultTableModel getTablaSocios(){
         DefaultTableModel tablemodel = new ModeloTablaNoEditable();
         int registros = 0;
-        String[] columNames = {"Código","Nombre","Apellidos","Edad", "Dirección", "Teléfono"};
+        String[] columNames = {"Nombre","Apellidos","Edad", "Dirección", "Teléfono"};
       
         try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Socios");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][6];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Socios");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("Nombre");
-                data[i][2] = res.getString("Apellidos");
-                data[i][3] = res.getString("Edad");
-                data[i][4] = res.getString("Direccion");
-                data[i][5] = res.getString("Telefono");
-            i++;
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            ObjectSet result = query.execute();
+            while(result.hasNext()){
+                registros = result.size();
             }
-            res.close();
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        Object[][] data = new String[registros][5];
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            ObjectSet result = query.execute();
+            int i = 0;
+            while(result.hasNext()){
+                Socio s = (Socio) result.next();
+                data[i][0] = s.getNombre();
+                data[i][1] = s.getApellidos();
+                data[i][2] = s.getEdad();
+                data[i][3] = s.getDireccion();
+                data[i][4] = s.getTelefono();
+                i++;
+            }
+            bd.close();
             tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
+            e.printStackTrace();
         }
         return tablemodel;
     }
@@ -101,316 +117,243 @@ public class Modelo{
     public DefaultTableModel getTablaPrestamos(){
         DefaultTableModel tablemodel = new ModeloTablaNoEditable();
         int registros = 0;
-        String[] columNames = {"Código","Código de Libro","Título","Código de Socio", "Nombre"};
+        String[] columNames = {"Título","Nombre de Socio","Teléfono de Socio"};
       
         try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Prestamos");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][5];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Prestamos");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("CodigoLibro");
-                data[i][2] = res.getString("Titulo");
-                data[i][3] = res.getString("CodigoSocio");
-                data[i][4] = res.getString("Nombre");
-            i++;
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Prestamo.class);
+            ObjectSet result = query.execute();
+            while(result.hasNext()){
+                registros = result.size();
             }
-            res.close();
+            bd.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
+            e.printStackTrace();
+        }
+        Object[][] data = new String[registros][3];
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Prestamo.class);
+            ObjectSet result = query.execute();
+            int i = 0;
+            while(result.hasNext()){
+                Prestamo p = (Prestamo) result.next();
+                data[i][0] = p.getLibro();
+                data[i][1] = p.getSocio().getNombre() + " " + p.getSocio().getApellidos();
+                data[i][2] = p.getSocio().getTelefono();
+                i++;
+            }
+            bd.close();
             tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
+            e.printStackTrace();
         }
         return tablemodel;
     }
     
-    public boolean InsertarLibro(String titulo, int ejemplares, String editorial, int paginas, int anyo){
-        String q = "INSERT INTO Libros (Titulo, Ejemplares, Editorial, Paginas, AnyoEdicion)"
-                + "VALUES('" + titulo + "', " + ejemplares + ", '" + editorial + "', " + paginas + ", " + anyo + ")";
-        try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+    public boolean insertarLibro(String titulo, long ejemplares, String editorial, int paginas, int anyo){
+        try{
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Libro l = new Libro(titulo, ejemplares, editorial, paginas, anyo);
+            bd.store(l);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al introducir nuevo libro\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean ModificarLibro(int codigo, String titulo, int ejemplares, String editorial, int paginas, int anyo){
-        String q = "UPDATE Libros SET Titulo = '" + titulo + "', Ejemplares = " + ejemplares + ", Editorial = '" + editorial + "', Paginas = " + paginas + ", "
-                + "AnyoEdicion = " + anyo + " WHERE Codigo = " + codigo;
+    public boolean modificarLibro(String tituloS, String titulo, int ejemplares, String editorial, int paginas, int anyo){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            query.descend("titulo").constrain(tituloS);
+            ObjectSet result = query.execute();
+            Libro l = (Libro) result.next();
+            l.setTitulo(titulo);
+            l.setEjemplares(ejemplares);
+            l.setEditorial(editorial);
+            l.setPaginas(paginas);
+            l.setAnyo(anyo);
+            bd.store(l);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al modificar el libro\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean EliminarLibro(int codigo){
-        String q = "DELETE FROM Libros WHERE Codigo = " + codigo;
+    public boolean eliminarLibro(String tituloS){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Libro.class);
+            query.descend("titulo").constrain(tituloS);
+            ObjectSet result = query.execute();
+            Libro l = (Libro) result.next();
+            bd.delete(l);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al eliminar el libro\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean InsertarSocio(String nombre, String apellidos, int edad, String direccion, int telefono){
-        String q = "INSERT INTO Socios (Nombre, Apellidos, Edad, Direccion, Telefono)"
-                + "VALUES('" + nombre + "', '" + apellidos + "', " + edad + ", '" + direccion + "', " + telefono + ")";
+    public boolean insertarSocio(String nombre, String apellidos, int edad, String direccion, long telefono){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
-            return true;
-        }catch(SQLException e){
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Socio s = new Socio(nombre, apellidos, edad, direccion, telefono);
+            bd.store(s);
+            bd.close();
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al introducir nuevo socio\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean ModificarSocio(int codigo, String nombre, String apellidos, int edad, String direccion, int telefono){
-        String q = "UPDATE Socios SET Nombre = '" + nombre + "', Apellidos = '" + apellidos + "', Edad = " + edad + ", Direccion = '" + direccion + "', "
-                + "Telefono = " + telefono + " WHERE Codigo = " + codigo;
+    public boolean modificarSocio(long telefonoS, String nombre, String apellidos, int edad, String direccion, int telefono){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefonoS);
+            ObjectSet result = query.execute();
+            Socio s = (Socio) result.next();
+            s.setNombre(nombre);
+            s.setApellidos(apellidos);
+            s.setEdad(edad);
+            s.setDireccion(direccion);
+            s.setTelefono(telefono);
+            bd.store(s);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al modificar el socio\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean EliminarSocio(int codigo){
-        String q = "DELETE FROM Socios WHERE Codigo = " + codigo;
+    public boolean eliminarSocio(long telefonoS){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefonoS);
+            ObjectSet result = query.execute();
+            Socio s = (Socio) result.next();
+            bd.delete(s);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al eliminar el socio\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public String buscarLibro(int codigo){
-        String libro = "";
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT Titulo FROM Libros WHERE Codigo = " + codigo);
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            libro = res.getString("Titulo");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al buscar libro\n" + e.getMessage());
-        }
-        return libro;
-    }
-    
-    public String buscarSocio(int codigo){
-        String socio = "";
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT Nombre FROM Socios WHERE Codigo = " + codigo);
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            socio = res.getString("Nombre");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al buscar socio\n" + e.getMessage());
-        }
-        return socio;
-    }
-    
-    public boolean InsertarPrestamo(int codigoLibro, String titulo, int codigoSocio, String nombre){
-        String q = "INSERT INTO Prestamos (CodigoLibro, Titulo, CodigoSocio, Nombre)"
-                + "VALUES(" + codigoLibro + ", '" + titulo + "', " + codigoSocio + ", '" + nombre + "')";
+    public boolean insertarPrestamo(String titulo, long telefono){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
-            return true;
-        }catch(SQLException e){
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefono);
+            ObjectSet result = query.execute();
+            Socio s = (Socio) result.next();
+            bd.close();
+            
+            bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Calendar fecha = new GregorianCalendar();
+            int año = fecha.get(Calendar.YEAR);
+            int mes = fecha.get(Calendar.MONTH) + 1;
+            int dia = fecha.get(Calendar.DAY_OF_MONTH);
+            String fi = "" + dia + "/" + mes + "/" + año;
+            int mesf = mes + 3;
+            String ff = "" + dia + "/" + mesf + "/" + año;
+            
+            Prestamo p = new Prestamo(titulo, s, fi, ff);
+            bd.store(p);
+            bd.close();
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al introducir nuevo préstamo\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean ModificarPrestamo(int codigo, int codigoLibro, String titulo, int codigoSocio, String nombre){
-        String q = "UPDATE Prestamos SET CodigoLibro = " + codigoLibro + ", Titulo = '" + titulo + "', CodigoSocio = " + codigoSocio + ", Nombre = '" + nombre
-                + "' WHERE Codigo = " + codigo;
+    public boolean modificarPrestamo(String tituloS, long telefonoS, String titulo, long telefono){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefonoS);
+            ObjectSet result = query.execute();
+            Socio sS = (Socio) result.next();
+            bd.close();
+            
+            bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefono);
+            result = query.execute();
+            Socio s = (Socio) result.next();
+            bd.close();
+            
+            bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            query = bd.query();
+            query.constrain(Prestamo.class);
+            query.descend("libro").constrain(tituloS);
+            query.descend("socio").constrain(sS);
+            result = query.execute();
+            Prestamo p = (Prestamo) result.next();
+            p.setLibro(titulo);
+            p.setSocio(s);
+            bd.store(p);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al modificar el préstamo\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
     
-    public boolean EliminarPrestamo(int codigo){
-        String q = "DELETE FROM Prestamos WHERE Codigo = " + codigo;
+    public boolean eliminarPrestamo(String tituloS, long telefonoS){
         try {
-            PreparedStatement pstm = this.getConexion().prepareStatement(q);
-            pstm.execute();
-            pstm.close();
+            ObjectContainer bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            Query query = bd.query();
+            query.constrain(Socio.class);
+            query.descend("telefono").constrain(telefonoS);
+            ObjectSet result = query.execute();
+            Socio sS = (Socio) result.next();
+            bd.close();
+            
+            bd = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "libreria.db4o");
+            query = bd.query();
+            query.constrain(Prestamo.class);
+            query.descend("libro").constrain(tituloS);
+            query.descend("socio").constrain(sS);
+            result = query.execute();
+            Prestamo p = (Prestamo) result.next();
+            bd.delete(p);
+            bd.close();
             return true;
-        }catch(SQLException e){
+        }catch(Exception e){
             JOptionPane.showMessageDialog(null, "Error al eliminar el préstamo\n" + e.getMessage());
+            e.printStackTrace();
         }
         return false;
-    }
-    
-    public DefaultTableModel getTablaConsultaNombre(String nombre){
-        DefaultTableModel tablemodel = new ModeloTablaNoEditable();
-        int registros = 0;
-        String[] columNames = {"Código","Nombre","Apellidos","Edad", "Dirección", "Teléfono"};
-      
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Socios WHERE Nombre = '" + nombre + "'");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][6];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Socios WHERE Nombre = '" + nombre + "'");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("Nombre");
-                data[i][2] = res.getString("Apellidos");
-                data[i][3] = res.getString("Edad");
-                data[i][4] = res.getString("Direccion");
-                data[i][5] = res.getString("Telefono");
-            i++;
-            }
-            res.close();
-            tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
-        }
-        return tablemodel;
-    }
-    
-    public DefaultTableModel getTablaConsultaApellido(String apellidos){
-        DefaultTableModel tablemodel = new ModeloTablaNoEditable();
-        int registros = 0;
-        String[] columNames = {"Código","Nombre","Apellidos","Edad", "Dirección", "Teléfono"};
-      
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Socios WHERE Apellidos = '" + apellidos + "'");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][6];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Socios WHERE Apellidos = '" + apellidos + "'");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("Nombre");
-                data[i][2] = res.getString("Apellidos");
-                data[i][3] = res.getString("Edad");
-                data[i][4] = res.getString("Direccion");
-                data[i][5] = res.getString("Telefono");
-            i++;
-            }
-            res.close();
-            tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
-        }
-        return tablemodel;
-    }
-    
-    public int getNumeroLibrosPrestados(int codigo){
-        int n = 0;
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Prestamos WHERE CodigoSocio = " + codigo);
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            n = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar préstamos\n" + e.getMessage());
-        }
-        return n;
-    }
-    
-    public DefaultTableModel getTablaConsultaTitulo(String titulo){
-        DefaultTableModel tablemodel = new ModeloTablaNoEditable();
-        int registros = 0;
-        String[] columNames = {"Código","Título","Ejemplares","Editorial", "Páginas", "Año de Edicion"};
-      
-        try{
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT count(Codigo) as total FROM Libros WHERE Titulo = '" + titulo + "'");
-            ResultSet res = pstm.executeQuery();
-            res.next();
-            registros = res.getInt("total");
-            res.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al contar tuplas\n" + e.getMessage());
-        }
-        Object[][] data = new String[registros][6];
-        try{
-          
-            PreparedStatement pstm = this.getConexion().prepareStatement("SELECT * FROM Libros WHERE Titulo = '" + titulo + "'");
-            ResultSet res = pstm.executeQuery();
-            int i=0;
-            while(res.next()){
-                data[i][0] = res.getString("Codigo");
-                data[i][1] = res.getString("Titulo");
-                data[i][2] = res.getString("Ejemplares");
-                data[i][3] = res.getString("Editorial");
-                data[i][4] = res.getString("Paginas");
-                data[i][5] = res.getString("AnyoEdicion");
-            i++;
-            }
-            res.close();
-            tablemodel.setDataVector(data, columNames);
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al obtener datos\n" + e.getMessage());
-        }
-        return tablemodel;
-    }
-    
-    public void getITLibros(){
-        
     }
 }

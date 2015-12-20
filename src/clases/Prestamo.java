@@ -1,22 +1,20 @@
 package clases;
 
-import java.util.ArrayList;
-
 public class Prestamo {
-    ArrayList<Libro> libros;
+    private String libro;
     private Socio socio;
     private String fechaI;
     private String fechaF;
     
-    public Prestamo(ArrayList<Libro> l, Socio s, String fi, String ff){
-        libros = l;
+    public Prestamo(String l, Socio s, String fi, String ff){
+        libro = l;
         socio = s;
         fechaI = fi;
         fechaF = ff;
     }
 
-    public ArrayList<Libro> getLibros() {
-        return libros;
+    public String getLibro() {
+        return libro;
     }
 
     public Socio getSocio() {
@@ -31,8 +29,8 @@ public class Prestamo {
         return fechaF;
     }
 
-    public void setLibros(ArrayList<Libro> libros) {
-        this.libros = libros;
+    public void setLibro(String libro) {
+        this.libro = libro;
     }
 
     public void setSocio(Socio socio) {
@@ -49,10 +47,7 @@ public class Prestamo {
     
     public String toString(){
         String s = socio.toString() + "\n\n";
-        for(int i = 0; i < libros.size() - 1; i++){
-            s = s + libros.get(i).toString() + "\n";
-        }
-        s = s + "\n"
+        s = s + libro + "\n"
                 + "(" + fechaI + " - " + fechaF + ")";
         return s;
     }
