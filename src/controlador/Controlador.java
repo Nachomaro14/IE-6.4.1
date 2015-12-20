@@ -329,10 +329,43 @@ public class Controlador implements ActionListener, MouseListener{
             int socio = vista.tablaSocios.rowAtPoint(e.getPoint());
             int prestamo = vista.tablaPrestamos.rowAtPoint(e.getPoint());
             if (libro > -1){
+                String tituloSeg = String.valueOf(vista.tablaLibros.getValueAt(libro, 0));
+                String titulo = String.valueOf(vista.tablaLibros.getValueAt(libro, 0));
+                String ejemplares = String.valueOf(vista.tablaLibros.getValueAt(libro, 1));
+                String editorial = String.valueOf(vista.tablaLibros.getValueAt(libro, 2));
+                String paginas = String.valueOf(vista.tablaLibros.getValueAt(libro, 3));
+                String anyo = String.valueOf(vista.tablaLibros.getValueAt(libro, 4));
                 
+                vista.tituloSeg.setText(tituloSeg);
+                vista.txtTituloLibro.setText(titulo);
+                vista.txtEjemplaresLibro.setText(ejemplares);
+                vista.txtEditorialLibro.setText(editorial);
+                vista.txtPaginasLibro.setText(paginas);
+                vista.txtAnoEdicionLibro.setText(anyo);
             }
             if (socio > -1){                
+                String telefonoSeg = String.valueOf(vista.tablaSocios.getValueAt(socio, 4));
+                String nombre = String.valueOf(vista.tablaSocios.getValueAt(socio, 0));
+                String apellidos = String.valueOf(vista.tablaSocios.getValueAt(socio, 1));
+                String edad = String.valueOf(vista.tablaSocios.getValueAt(socio, 2));
+                String direccion = String.valueOf(vista.tablaSocios.getValueAt(socio, 3));
+                String telefono = String.valueOf(vista.tablaSocios.getValueAt(socio, 4));
                 
+                vista.telefonoSeg.setText(telefonoSeg);
+                vista.txtNombreSocio.setText(nombre);
+                vista.txtApellidosSocio.setText(apellidos);
+                vista.txtEdadSocio.setText(edad);
+                vista.txtDireccionSocio.setText(direccion);
+                vista.txtTelefonoSocio.setText(telefono);
+            }
+            if (prestamo > -1){
+                String titulo = String.valueOf(vista.tablaSocios.getValueAt(socio, 0));
+                String nombre = String.valueOf(vista.tablaSocios.getValueAt(socio, 1));
+                String telefono = String.valueOf(vista.tablaSocios.getValueAt(socio, 2));
+                
+                vista.tituloS.setText(titulo);
+                vista.txtNombreSocioPrestamo.setText(nombre);
+                vista.telefonoS.setText(telefono);
             }
         }
     }
